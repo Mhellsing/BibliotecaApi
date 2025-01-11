@@ -1,4 +1,5 @@
 ﻿using BibliotecaApi.MessageConstant;
+using BibliotecaApi.Models;
 using BibliotecaApi.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -21,7 +22,9 @@ namespace BibliotecaApi.Controllers
         [HttpGet]
         public IActionResult BuscarLivros()
         {
-            return Ok();
+            LivroResponse response = _livroService.BuscarLivros();
+            
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -46,8 +49,7 @@ namespace BibliotecaApi.Controllers
         [Route("AdicionarLivro")]
         [EndpointDescription(MessageConstants.AdicionarLivro)]
         public IActionResult AdicionarLivro([FromBody] Livro livro)
-        {
-            // Verificar se o livro já existe
+        {            
             IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(livro.Id);
             if (validacaoResult != null)
             {
