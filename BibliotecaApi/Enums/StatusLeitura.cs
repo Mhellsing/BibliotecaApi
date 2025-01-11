@@ -3,6 +3,7 @@
     public enum StatusLeitura
     {
         Lido,
-        Lendo
+        Lendo,
+        NaoLido
     }
 }
