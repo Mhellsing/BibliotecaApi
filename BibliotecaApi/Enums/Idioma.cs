@@ -7,6 +7,7 @@
         frances,
         ingles,
         italiano,
-        portugues
+        portuguesBrasil,
+        portuguesPortugal
     }
 }

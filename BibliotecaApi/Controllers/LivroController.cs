@@ -1,6 +1,7 @@
 ﻿using BibliotecaApi.MessageConstant;
 using BibliotecaApi.Models;
 using BibliotecaApi.Models.Responses;
+using BibliotecaApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -20,18 +21,19 @@ namespace BibliotecaApi.Controllers
 
 
         [HttpGet]
-        public IActionResult BuscarLivros()
+        [Route("BuscarLivros")]
+        [EndpointDescription(MessageConstants.BuscaTodos)]
+        public async Task<IActionResult> BuscarLivros()
         {
-            LivroResponse response = _livroService.BuscarLivros();
+            LivroResponse response = await _livroService.BuscarLivros();
             
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [Route("BuscarLivroPorId")]
         [EndpointDescription(MessageConstants.BuscaLivroPorId)]
-
-        public IActionResult BuscarLivroPorId(int? id)
+        public async Task<IActionResult> BuscarLivroPorId(int? id)
         {
             IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
 
@@ -40,7 +42,7 @@ namespace BibliotecaApi.Controllers
                 return validacaoResult;
             }
 
-            LivroResponse response = _livroService.BuscarLivroPorId(id);
+            LivroResponse response = await _livroService.BuscarLivroPorId(id);
 
             return Ok(response);
         }
@@ -48,7 +50,7 @@ namespace BibliotecaApi.Controllers
         [HttpPost]
         [Route("AdicionarLivro")]
         [EndpointDescription(MessageConstants.AdicionarLivro)]
-        public IActionResult AdicionarLivro([FromBody] Livro livro)
+        public async Task<IActionResult> AdicionarLivro([FromBody] Livro livro)
         {            
             IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(livro.Id);
             if (validacaoResult != null)
@@ -56,7 +58,7 @@ namespace BibliotecaApi.Controllers
                 return validacaoResult;
             }
 
-            LivroResponse response = _livroService.AdicionarLivro(livro);
+            LivroResponse response = await _livroService.AdicionarLivro(livro);
 
             return Ok(response);
         }
@@ -64,7 +66,7 @@ namespace BibliotecaApi.Controllers
         [HttpDelete]
         [Route("RemoverLivro")]
         [EndpointDescription(MessageConstants.RemoverLivro)]
-        public IActionResult RemoverLivro(int? id)
+        public async Task<IActionResult> RemoverLivro(int? id)
         {
             IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
 
@@ -73,7 +75,7 @@ namespace BibliotecaApi.Controllers
                 return validacaoResult;
             }
 
-            LivroResponse response = _livroService.RemoverLivro(id);
+            LivroResponse response = await _livroService.RemoverLivro(id);
 
             return Ok(response);
         }
@@ -81,7 +83,7 @@ namespace BibliotecaApi.Controllers
         [HttpPut]
         [Route("AtualizarLivro")]
         [EndpointDescription(MessageConstants.AtualizarLivro)]
-        public IActionResult AtualizarLivro(int id, [FromBody] Livro livro)
+        public async Task<IActionResult> AtualizarLivro(int id, [FromBody] Livro livro)
         {
             IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
 
@@ -90,7 +92,7 @@ namespace BibliotecaApi.Controllers
                 return validacaoResult;
             }
 
-            LivroResponse response = _livroService.AtualizarLivro(id, livro);
+            LivroResponse response = await _livroService.AtualizarLivro(id, livro);
 
             return Ok(response);
         }
@@ -98,10 +100,8 @@ namespace BibliotecaApi.Controllers
         private BadRequestObjectResult? ValidarIdSeIdNuloNegativo(int? id)
         {
             if (id == null || id <= 0)
-            {
-                LivroResponse response = new() { StatusCode = HttpStatusCode.BadRequest, Mensagem = MessageConstants.LivroIdNuloNegativo };
-
-                return BadRequest(response);
+            {                
+                return BadRequest(new LivroResponse(MessageConstants.LivroIdNuloNegativo, HttpStatusCode.BadRequest, []));
             }
 
             return null;
