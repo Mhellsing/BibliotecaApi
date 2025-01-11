@@ -3,7 +3,7 @@
     public static class MessageConstants
     {
         #region Retorno Reponse
-        public const string LivrosEncontrados = "Livros encontrados.";
+        public const string LivrosEncontrados = "Livro(s) encontrado(s).";
         public const string LivroNaoEncontrado = "Livro não encontrado.";
         public const string LivroAdicionadoComSucesso = "Livro adicionado com sucesso.";
         public const string LivroAtualizadoComSucesso = "Livro atualizado com sucesso.";
@@ -11,7 +11,10 @@
         public const string LivroIdNuloNegativo = "O id do livro não pode ser nulo ou negativo.";
         public const string LivroJaExiste = "O livro já existe.";
         public const string LivroNaoPodeSerNulo = "Não é possível adicionar um livro ausente de informações.";
-        public const string NenhumLivroEncontrado = "Nenhum livro encontrado.";
+        public const string LivroNaoPodeSerAtualizado = "Não é possível atualizar um livro ausente de informações.";
+        public const string NenhumLivroEncontrado = "Nenhum livro encontrado.";        
+        public const string LivroNaoEncontradoParaRemocao = "Livro não encontrado para remoção.";
+        public const string LivroNaoEncontradoParaAtualizacao = "Livro não encontrado para atualização.";
         #endregion
 
         #region Descrição Endpoints
