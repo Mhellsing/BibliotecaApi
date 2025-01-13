@@ -11,16 +11,15 @@ namespace BibliotecaApi.Extensions
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            #region Services
             services.AddScoped<ILivroService, LivroService>();
+            #endregion
 
-            return services;
-        }
-
-        public static IServiceCollection AddRepository(this IServiceCollection services) 
-        { 
+            #region Repository
             services.AddScoped<ILivroRepository, LivroRepository>();
             services.AddScoped<PostgreConnection>();
-            
+            #endregion
+
             return services;
         }
     }
