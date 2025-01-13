@@ -1,6 +1,7 @@
 ﻿using BibliotecaApi.MessageConstant;
 using BibliotecaApi.Models;
 using BibliotecaApi.Models.Responses;
+using BibliotecaApi.Repository.Interfaces;
 using BibliotecaApi.Services.Interfaces;
 using System.Net;
 
@@ -23,8 +24,13 @@ namespace BibliotecaApi.Services
                     return new LivroResponse(MessageConstants.LivroNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
                 }
 
-                //validar se o livro adicionado já existe no cadastro
+                Livro livroJaExiste = await _livroRepository.BuscarLivroPorIsbn(objeto.Isbn);
 
+                if(livroJaExiste != null)
+                {
+                    return new LivroResponse(MessageConstants.LivroJaCadastrado, HttpStatusCode.BadRequest, []);
+                }
+                
                 Livro livro =  await _livroRepository.AdicionarLivro(objeto);
 
                 List<Livro> livros = [livro];
@@ -47,11 +53,9 @@ namespace BibliotecaApi.Services
                     return new LivroResponse(MessageConstants.LivroNaoPodeSerAtualizado, HttpStatusCode.BadRequest, []);
                 }
 
-                Livro livro = await _livroRepository.AtualizarLivro(id, objeto);
+                bool foiAtualizado = await _livroRepository.AtualizarLivro(id, objeto);
 
-                List<Livro> livros = [livro];
-
-                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, livros);
+                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, []);
             }
             catch (Exception)
             {
@@ -66,8 +70,8 @@ namespace BibliotecaApi.Services
             {
                 IEnumerable<Livro> livros = await _livroRepository.BuscarLivros();
 
-                if (livros == null) 
-                {                    
+                if (!livros.Any()) 
+                {                       
                     return new LivroResponse(MessageConstants.NenhumLivroEncontrado, HttpStatusCode.NotFound, []); ;
                 }
 
@@ -80,38 +84,37 @@ namespace BibliotecaApi.Services
             }
         }
 
-        public async Task<LivroResponse> BuscarLivroPorId(int? id)
+        public async Task<LivroResponse> BuscarLivroPorIsbn(string? isbn)
         {
             try
             {
-                IEnumerable<Livro> livros = await _livroRepository.BuscarLivroPorId(id);
-                if (!livros.Any())
+                Livro livro = await _livroRepository.BuscarLivroPorIsbn(isbn);
+
+                if (livro == null)
                 {
                     return new LivroResponse(MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                return new LivroResponse(MessageConstants.LivrosEncontrados, HttpStatusCode.OK, livros.ToList());
-
+                return new LivroResponse(MessageConstants.LivrosEncontrados, HttpStatusCode.OK, [livro]);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
-
-        public async Task<LivroResponse> RemoverLivro(int? id)
+        public async Task<LivroResponse> DeletarLivro(int? id)
         {
             try
             {
-                IEnumerable<Livro> livros = await _livroRepository.RemoverLivro(id);
-                if (!livros.Any())
+                bool foiDeletado = await _livroRepository.DeletarLivro(id);
+
+                if (!foiDeletado)
                 {
                     return new LivroResponse(MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                return new LivroResponse(MessageConstants.LivroRemovidoComSucesso, HttpStatusCode.OK, livros.ToList());
+                return new LivroResponse(MessageConstants.LivroRemovidoComSucesso, HttpStatusCode.OK, []);
             }
             catch (Exception)
             {
@@ -126,8 +129,7 @@ namespace BibliotecaApi.Services
                     string.IsNullOrEmpty(livro.Autor) ||
                     string.IsNullOrEmpty(livro.Editora) ||
                     string.IsNullOrEmpty(livro.Titulo) ||
-                    livro.Categoria == null);
+                    livro.GeneroLiterario == null);
         }
     }
-
 }

@@ -2,8 +2,8 @@
 {
     public enum StatusLeitura
     {
-        Lido,
-        Lendo,
-        NaoLido
+        NaoIniciado,
+        Iniciado,
+        Encerrado
     }
 }

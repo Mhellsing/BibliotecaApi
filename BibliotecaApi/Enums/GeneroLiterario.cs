@@ -1,6 +1,6 @@
 ﻿namespace BibliotecaApi.Enums
 {
-    public enum Categoria
+    public enum GeneroLiterario
     {
         autoajuda,
         fantasia,

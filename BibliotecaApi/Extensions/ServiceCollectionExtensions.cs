@@ -1,5 +1,9 @@
-﻿using BibliotecaApi.Services;
+﻿using BibliotecaApi.Repository;
+using BibliotecaApi.Repository.Connection;
+using BibliotecaApi.Repository.Interfaces;
+using BibliotecaApi.Services;
 using BibliotecaApi.Services.Interfaces;
+
 
 namespace BibliotecaApi.Extensions
 {
@@ -9,6 +13,14 @@ namespace BibliotecaApi.Extensions
         {
             services.AddScoped<ILivroService, LivroService>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddRepository(this IServiceCollection services) 
+        { 
+            services.AddScoped<ILivroRepository, LivroRepository>();
+            services.AddScoped<PostgreConnection>();
+            
             return services;
         }
     }

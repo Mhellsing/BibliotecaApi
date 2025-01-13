@@ -31,18 +31,16 @@ namespace BibliotecaApi.Controllers
         }
 
         [HttpGet]
-        [Route("BuscarLivroPorId")]
-        [EndpointDescription(MessageConstants.BuscaLivroPorId)]
-        public async Task<IActionResult> BuscarLivroPorId(int? id)
+        [Route("BuscarLivroPorIsbn")]
+        [EndpointDescription(MessageConstants.BuscaLivroPorIsbn)]
+        public async Task<IActionResult> BuscarLivroPorId(string? isbn)
         {
-            IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
-
-            if (validacaoResult != null)
-            {
-                return validacaoResult;
+            if (string.IsNullOrEmpty(isbn))
+            {                
+                return NotFound(new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []));
             }
 
-            LivroResponse response = await _livroService.BuscarLivroPorId(id);
+            LivroResponse response = await _livroService.BuscarLivroPorIsbn(isbn);
 
             return Ok(response);
         }
@@ -75,7 +73,7 @@ namespace BibliotecaApi.Controllers
                 return validacaoResult;
             }
 
-            LivroResponse response = await _livroService.RemoverLivro(id);
+            LivroResponse response = await _livroService.DeletarLivro(id);
 
             return Ok(response);
         }

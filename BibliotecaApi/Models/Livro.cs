@@ -10,8 +10,9 @@ namespace BibliotecaApi.Models
         public string? Editora { get; set; }
         public string? Titulo { get; set; }
         public string? CapaUrl { get; set; }
+        public string? Isbn { get; set; }
         public Idioma? Idioma { get; set; }
-        public Categoria? Categoria { get; set; }
+        public GeneroLiterario? GeneroLiterario { get; set; }
         public StatusLeitura? StatusLeitura { get; set; }
         public DateTime DataCadastro { get; set; }
     }
