@@ -9,12 +9,10 @@ namespace BibliotecaApi.Repository.Connection
         
         public PostgreConnection(IConfiguration configuration) 
         {
-            Connection = new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection"));
-
+            Connection = new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection"));            
             Connection.Open();
         }
 
         public void Dispose() => Connection?.Dispose();
-        
     }
 }

@@ -2,11 +2,12 @@
 {
     public enum GeneroLiterario
     {
-        autoajuda,
-        fantasia,
-        ficaocientifica,
-        historico,
-        horror,
-        suspense,
+        Autoajuda = 1,
+        Fantasia = 2,
+        Ficaocientifica = 3,
+        Historico = 4,
+        Horror = 5,
+        Romance = 6,
+        Suspense = 7,
     }
 }

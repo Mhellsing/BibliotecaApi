@@ -19,6 +19,27 @@ namespace BibliotecaApi.Controllers
             _livroService = livroService;
         }
 
+        [HttpPost]
+        [Route("AdicionarLivro")]
+        [EndpointDescription(MessageConstants.AdicionarLivro)]
+        public async Task<IActionResult> AdicionarLivro([FromBody] Livro livro)
+        {
+            LivroResponse response = await _livroService.AdicionarLivro(livro);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("AtualizarLivro")]
+        [EndpointDescription(MessageConstants.AtualizarLivro)]
+        public async Task<IActionResult> AtualizarLivro(string isbn, [FromBody] Livro livro)
+        {
+            ValidarSeIsbnNulo (isbn);
+
+            LivroResponse response = await _livroService.AtualizarLivro(isbn, livro);
+
+            return Ok(response);
+        }
 
         [HttpGet]
         [Route("BuscarLivros")]
@@ -33,73 +54,32 @@ namespace BibliotecaApi.Controllers
         [HttpGet]
         [Route("BuscarLivroPorIsbn")]
         [EndpointDescription(MessageConstants.BuscaLivroPorIsbn)]
-        public async Task<IActionResult> BuscarLivroPorId(string? isbn)
+        public async Task<IActionResult> BuscarLivroPorIsbn(string? isbn)
         {
-            if (string.IsNullOrEmpty(isbn))
-            {                
-                return NotFound(new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []));
-            }
+            ValidarSeIsbnNulo (isbn);
 
             LivroResponse response = await _livroService.BuscarLivroPorIsbn(isbn);
 
             return Ok(response);
-        }
-
-        [HttpPost]
-        [Route("AdicionarLivro")]
-        [EndpointDescription(MessageConstants.AdicionarLivro)]
-        public async Task<IActionResult> AdicionarLivro([FromBody] Livro livro)
-        {            
-            IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(livro.Id);
-            if (validacaoResult != null)
-            {
-                return validacaoResult;
-            }
-
-            LivroResponse response = await _livroService.AdicionarLivro(livro);
-
-            return Ok(response);
-        }
+        }        
 
         [HttpDelete]
-        [Route("RemoverLivro")]
-        [EndpointDescription(MessageConstants.RemoverLivro)]
-        public async Task<IActionResult> RemoverLivro(int? id)
+        [Route("DeletarLivro")]
+        [EndpointDescription(MessageConstants.DeletarLivro)]
+        public async Task<IActionResult> DeletarLivro(string? isbn)
         {
-            IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
+            ValidarSeIsbnNulo(isbn);
 
-            if (validacaoResult != null)
-            {
-                return validacaoResult;
-            }
-
-            LivroResponse response = await _livroService.DeletarLivro(id);
+            LivroResponse response = await _livroService.DeletarLivro(isbn);
 
             return Ok(response);
-        }
+        }       
 
-        [HttpPut]
-        [Route("AtualizarLivro")]
-        [EndpointDescription(MessageConstants.AtualizarLivro)]
-        public async Task<IActionResult> AtualizarLivro(int id, [FromBody] Livro livro)
+        private BadRequestObjectResult? ValidarSeIsbnNulo(string? isbn)
         {
-            IActionResult? validacaoResult = ValidarIdSeIdNuloNegativo(id);
-
-            if (validacaoResult != null)
-            {
-                return validacaoResult;
-            }
-
-            LivroResponse response = await _livroService.AtualizarLivro(id, livro);
-
-            return Ok(response);
-        }
-
-        private BadRequestObjectResult? ValidarIdSeIdNuloNegativo(int? id)
-        {
-            if (id == null || id <= 0)
+            if (string.IsNullOrEmpty(isbn))
             {                
-                return BadRequest(new LivroResponse(MessageConstants.LivroIdNuloNegativo, HttpStatusCode.BadRequest, []));
+                return BadRequest(new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []));
             }
 
             return null;

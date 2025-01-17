@@ -4,11 +4,11 @@ namespace BibliotecaApi.Repository.Interfaces
 {
     public interface ILivroRepository
     {
-        Task<Livro> AdicionarLivro(Livro objeto);
-        Task<bool> AtualizarLivro(int? id, Livro objeto);
+        Task<bool> AdicionarLivro(Livro objeto);
+        Task<bool> AtualizarLivro(string? isbn, Livro objeto);
         Task<IEnumerable<Livro>> BuscarLivros();        
-        Task<Livro> BuscarLivroPorIsbn(string? isbn);
-        Task<bool> DeletarLivro(int? id);
+        Task<Livro> BuscarLivroPorIsbn(string isbn);
+        Task<bool> DeletarLivro(string? isbn);
 
     }
 }

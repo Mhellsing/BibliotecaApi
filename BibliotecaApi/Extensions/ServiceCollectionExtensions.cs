@@ -16,8 +16,8 @@ namespace BibliotecaApi.Extensions
             #endregion
 
             #region Repository
-            services.AddScoped<ILivroRepository, LivroRepository>();
             services.AddScoped<PostgreConnection>();
+            services.AddScoped<ILivroRepository, LivroRepository>();
             #endregion
 
             return services;

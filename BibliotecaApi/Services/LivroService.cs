@@ -22,45 +22,44 @@ namespace BibliotecaApi.Services
                 if (ValidarSeLivroNulo(objeto))
                 {
                     return new LivroResponse(MessageConstants.LivroNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
-                }
+                }               
 
-                Livro livroJaExiste = await _livroRepository.BuscarLivroPorIsbn(objeto.Isbn);
-
-                if(livroJaExiste != null)
+                if(string.IsNullOrEmpty(objeto.Isbn))
                 {
-                    return new LivroResponse(MessageConstants.LivroJaCadastrado, HttpStatusCode.BadRequest, []);
+                    return new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
                 }
                 
-                Livro livro =  await _livroRepository.AdicionarLivro(objeto);
+                bool foiAdicionado = await _livroRepository.AdicionarLivro(objeto);
 
-                List<Livro> livros = [livro];
+                if (!foiAdicionado)
+                {
+                    return new LivroResponse (MessageConstants.LivroJaCadastrado, HttpStatusCode.BadRequest, []);
+                }                
 
-                return new LivroResponse(MessageConstants.LivroAdicionadoComSucesso, HttpStatusCode.OK, livros);
+                return new LivroResponse (MessageConstants.LivroAdicionadoComSucesso, HttpStatusCode.OK, [objeto]); ;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return new LivroResponse(MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }            
         }
 
-        public async Task<LivroResponse> AtualizarLivro(int id, Livro objeto)
+        public async Task<LivroResponse> AtualizarLivro(string? isbn, Livro objeto)
         {
             try
             {
-                if (ValidarSeLivroNulo(objeto))
+                bool foiAtualizado = await _livroRepository.AtualizarLivro(isbn, objeto);
+
+                if (!foiAtualizado)
                 {
-                    return new LivroResponse(MessageConstants.LivroNaoPodeSerAtualizado, HttpStatusCode.BadRequest, []);
+                    return new LivroResponse (MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                bool foiAtualizado = await _livroRepository.AtualizarLivro(id, objeto);
-
-                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, []);
+                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, [objeto]);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
@@ -79,8 +78,7 @@ namespace BibliotecaApi.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
@@ -88,7 +86,7 @@ namespace BibliotecaApi.Services
         {
             try
             {
-                Livro livro = await _livroRepository.BuscarLivroPorIsbn(isbn);
+                Livro? livro = await _livroRepository.BuscarLivroPorIsbn(isbn);
 
                 if (livro == null)
                 {
@@ -99,15 +97,15 @@ namespace BibliotecaApi.Services
             }
             catch (Exception)
             {
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
-        public async Task<LivroResponse> DeletarLivro(int? id)
+        public async Task<LivroResponse> DeletarLivro(string? isbn)
         {
             try
             {
-                bool foiDeletado = await _livroRepository.DeletarLivro(id);
+                bool foiDeletado = await _livroRepository.DeletarLivro(isbn);
 
                 if (!foiDeletado)
                 {
@@ -118,8 +116,7 @@ namespace BibliotecaApi.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
@@ -129,7 +126,7 @@ namespace BibliotecaApi.Services
                     string.IsNullOrEmpty(livro.Autor) ||
                     string.IsNullOrEmpty(livro.Editora) ||
                     string.IsNullOrEmpty(livro.Titulo) ||
-                    livro.GeneroLiterario == null);
+                    !livro.GeneroLiterario.HasValue);
         }
     }
 }

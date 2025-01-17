@@ -16,6 +16,7 @@
         public const string LivroNaoEncontradoParaRemocao = "Livro não encontrado para remoção.";
         public const string LivroNaoEncontradoParaAtualizacao = "Livro não encontrado para atualização.";
         public const string IsbnNaoPodeSerNulo = "O isbn do livro não pode ser nulo.";
+        public const string ErroInterno = "Ocorreu um erro interno. Tente novamente.";
         #endregion
 
         #region Descrição Endpoints
@@ -23,7 +24,7 @@
         public const string BuscaLivroPorIsbn = "Busca um livro pelo seu isbn.";
         public const string AdicionarLivro = "Adiciona um livro ao acervo.";
         public const string AtualizarLivro = "Atualiza um livro do acervo.";
-        public const string RemoverLivro = "Remove um livro do acervo.";
+        public const string DeletarLivro = "Deleta um livro do acervo.";
         #endregion
     }
 }
