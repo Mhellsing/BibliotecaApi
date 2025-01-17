@@ -1,6 +1,7 @@
 ﻿using BibliotecaApi.MessageConstant;
 using BibliotecaApi.Models;
 using BibliotecaApi.Models.Responses;
+using BibliotecaApi.Repository.Interfaces;
 using BibliotecaApi.Services.Interfaces;
 using System.Net;
 
@@ -21,42 +22,44 @@ namespace BibliotecaApi.Services
                 if (ValidarSeLivroNulo(objeto))
                 {
                     return new LivroResponse(MessageConstants.LivroNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
+                }               
+
+                if(string.IsNullOrEmpty(objeto.Isbn))
+                {
+                    return new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
                 }
+                
+                bool foiAdicionado = await _livroRepository.AdicionarLivro(objeto);
 
-                //validar se o livro adicionado já existe no cadastro
+                if (!foiAdicionado)
+                {
+                    return new LivroResponse (MessageConstants.LivroJaCadastrado, HttpStatusCode.BadRequest, []);
+                }                
 
-                Livro livro =  await _livroRepository.AdicionarLivro(objeto);
-
-                List<Livro> livros = [livro];
-
-                return new LivroResponse(MessageConstants.LivroAdicionadoComSucesso, HttpStatusCode.OK, livros);
+                return new LivroResponse (MessageConstants.LivroAdicionadoComSucesso, HttpStatusCode.OK, [objeto]); ;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return new LivroResponse(MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }            
         }
 
-        public async Task<LivroResponse> AtualizarLivro(int id, Livro objeto)
+        public async Task<LivroResponse> AtualizarLivro(string? isbn, Livro objeto)
         {
             try
             {
-                if (ValidarSeLivroNulo(objeto))
+                bool foiAtualizado = await _livroRepository.AtualizarLivro(isbn, objeto);
+
+                if (!foiAtualizado)
                 {
-                    return new LivroResponse(MessageConstants.LivroNaoPodeSerAtualizado, HttpStatusCode.BadRequest, []);
+                    return new LivroResponse (MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                Livro livro = await _livroRepository.AtualizarLivro(id, objeto);
-
-                List<Livro> livros = [livro];
-
-                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, livros);
+                return new LivroResponse(MessageConstants.LivroAtualizadoComSucesso, HttpStatusCode.OK, [objeto]);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
@@ -66,8 +69,8 @@ namespace BibliotecaApi.Services
             {
                 IEnumerable<Livro> livros = await _livroRepository.BuscarLivros();
 
-                if (livros == null) 
-                {                    
+                if (!livros.Any()) 
+                {                       
                     return new LivroResponse(MessageConstants.NenhumLivroEncontrado, HttpStatusCode.NotFound, []); ;
                 }
 
@@ -75,48 +78,45 @@ namespace BibliotecaApi.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
-        public async Task<LivroResponse> BuscarLivroPorId(int? id)
+        public async Task<LivroResponse> BuscarLivroPorIsbn(string? isbn)
         {
             try
             {
-                IEnumerable<Livro> livros = await _livroRepository.BuscarLivroPorId(id);
-                if (!livros.Any())
+                Livro? livro = await _livroRepository.BuscarLivroPorIsbn(isbn);
+
+                if (livro == null)
                 {
                     return new LivroResponse(MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                return new LivroResponse(MessageConstants.LivrosEncontrados, HttpStatusCode.OK, livros.ToList());
-
+                return new LivroResponse(MessageConstants.LivrosEncontrados, HttpStatusCode.OK, [livro]);
             }
             catch (Exception)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
-
-        public async Task<LivroResponse> RemoverLivro(int? id)
+        public async Task<LivroResponse> DeletarLivro(string? isbn)
         {
             try
             {
-                IEnumerable<Livro> livros = await _livroRepository.RemoverLivro(id);
-                if (!livros.Any())
+                bool foiDeletado = await _livroRepository.DeletarLivro(isbn);
+
+                if (!foiDeletado)
                 {
                     return new LivroResponse(MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
                 }
 
-                return new LivroResponse(MessageConstants.LivroRemovidoComSucesso, HttpStatusCode.OK, livros.ToList());
+                return new LivroResponse(MessageConstants.LivroRemovidoComSucesso, HttpStatusCode.OK, []);
             }
             catch (Exception)
             {
-
-                throw;
+                return new LivroResponse (MessageConstants.ErroInterno, HttpStatusCode.InternalServerError, []);
             }
         }
 
@@ -126,8 +126,7 @@ namespace BibliotecaApi.Services
                     string.IsNullOrEmpty(livro.Autor) ||
                     string.IsNullOrEmpty(livro.Editora) ||
                     string.IsNullOrEmpty(livro.Titulo) ||
-                    livro.Categoria == null);
+                    !livro.GeneroLiterario.HasValue);
         }
     }
-
 }
