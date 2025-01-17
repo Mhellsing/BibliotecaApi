@@ -75,59 +75,30 @@ namespace BibliotecaApi.Repository
                 string sql = @"UPDATE livros SET ";
                 DynamicParameters parametros = new ();
 
-                if (!string.IsNullOrEmpty (objeto.Autor))
+                Dictionary<string,object> camposParaAtualizar = new Dictionary<string,object>
                 {
-                    sql += "autor = @autor, ";
-                    parametros.Add ("autor", objeto.Autor);
-                }
+                    { "autor", objeto.Autor },
+                    { "editora", objeto.Editora },
+                    { "titulo", objeto.Titulo },
+                    { "isbn", objeto.Isbn },
+                    { "idioma_id", objeto.Idioma },
+                    { "gen_literario_id", objeto.GeneroLiterario },
+                    { "num_paginas", objeto.NumeroPaginas },
+                    { "sta_leitura_id", objeto.StatusLeitura }
+                };
 
-                if (!string.IsNullOrEmpty (objeto.Editora))
+                foreach(KeyValuePair<string, object> campo in camposParaAtualizar)
                 {
-                    sql += "editora = @editora, ";
-                    parametros.Add ("editora", objeto.Editora);
+                    if(campo.Value != null && !(campo.Value is string valor && string.IsNullOrEmpty(valor)))
+                    {
+                        sql += $"{campo.Key} = @{campo.Key}, ";
+                        parametros.Add(campo.Key,campo.Value);
+                    }
                 }
-
-                if (!string.IsNullOrEmpty (objeto.Titulo))
-                {
-                    sql += "titulo = @titulo, ";
-                    parametros.Add ("titulo", objeto.Titulo);
-                }
-
-                if (!string.IsNullOrEmpty (objeto.Isbn))
-                {
-                    sql += "isbn = @isbn, ";
-                    parametros.Add ("isbn", objeto.Isbn);
-                }
-
-                if (objeto.Idioma.HasValue)
-                {
-                    sql += "idioma_id = @idioma, ";
-                    parametros.Add ("idioma", objeto.Idioma);
-                }
-
-                if (objeto.GeneroLiterario.HasValue)
-                {
-                    sql += "gen_literario_id = @generoLiterario, ";
-                    parametros.Add ("generoLiterario", objeto.GeneroLiterario);
-                }
-
-                if (objeto.NumeroPaginas.HasValue)
-                {
-                    sql += "num_paginas = @numeroPaginas, ";
-                    parametros.Add ("numeroPaginas", objeto.NumeroPaginas);
-                }
-
-                if (objeto.StatusLeitura.HasValue)
-                {
-                    sql += "sta_leitura_id = @statusLeitura, ";
-                    parametros.Add ("statusLeitura", objeto.StatusLeitura);
-                }
-
-                // Remoção da vírgula extra e finalização da query
+                
                 sql = sql.TrimEnd (',', ' ') + " WHERE isbn = @isbn";
                 parametros.Add ("isbn", isbn);
-
-                // Caso nenhum campo tenha sido modificado
+                                
                 if (sql.EndsWith ("SET WHERE isbn = @isbn"))
                 {
                     new InvalidOperationException ("Nenhum valor foi fornecido para atualização.");
