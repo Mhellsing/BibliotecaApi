@@ -5,10 +5,10 @@ namespace BibliotecaApi.Services.Interfaces
 {
     public interface ILivroService
     {
-        Task<LivroResponse> AdicionarLivro(Livro objeto);
-        Task<LivroResponse> AtualizarLivro(string isbn, Livro objeto);
-        Task<LivroResponse> BuscarLivros();        
-        Task<LivroResponse> BuscarLivroPorIsbn(string? isbn);
-        Task<LivroResponse> DeletarLivro(string? isbn);
+        Task<LivroResponse> AdicionarLivroAsync(Livro objeto);
+        Task<LivroResponse> AtualizarLivroAsync(string isbn, Livro objeto);
+        Task<LivroResponse> BuscarLivrosAsync();
+        Task<LivroResponse> BuscarLivroPorIsbnAsync(string? isbn);
+        Task<LivroResponse> DeletarLivroAsync(string? isbn);
     }
 }

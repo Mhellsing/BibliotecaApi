@@ -15,7 +15,7 @@ namespace BibliotecaApi.Repository
             _connection = connection;
         }
 
-        public async Task<bool> AdicionarLivro(Livro objeto)
+        public async Task<bool> AdicionarLivroAsync(Livro objeto)
         {
             try
             {
@@ -65,10 +65,10 @@ namespace BibliotecaApi.Repository
             {
 
                 throw;
-            }            
+            }
         }
 
-        public async Task<bool> AtualizarLivro(string? isbn, Livro objeto)
+        public async Task<bool> AtualizarLivroAsync(string? isbn, Livro objeto)
         {
             try
             {
@@ -114,24 +114,24 @@ namespace BibliotecaApi.Repository
             {
 
                 throw;
-            }           
+            }
         }
 
-        public async Task<Livro> BuscarLivroPorIsbn(string isbn)
+        public async Task<Livro> BuscarLivroPorIsbnAsync(string isbn)
         {
             try
             {
                 const string sql = @"SELECT                                    
-                                    autor            as Autor,
-                                    editora          as Editora,
-                                    titulo           as Titulo,
-                                    isbn             as Isbn,
-                                    idioma_id        as Idioma,
-                                    gen_literario_id as GeneroLiterario,
-                                    num_paginas      as NumeroPaginas, 
-                                    sta_leitura_id   as StatusLeitura
-                                 FROM livros
-                                 WHERE isbn = @isbn";
+                                       autor            as Autor,
+                                       editora          as Editora,
+                                       titulo           as Titulo,
+                                       isbn             as Isbn,
+                                       idioma_id        as Idioma,
+                                       gen_literario_id as GeneroLiterario,
+                                       num_paginas      as NumeroPaginas, 
+                                       sta_leitura_id   as StatusLeitura
+                                     FROM livros
+                                     WHERE isbn = @isbn";
 
                 DynamicParameters parametros = new ();
                 parametros.Add ("isbn", isbn);
@@ -147,20 +147,20 @@ namespace BibliotecaApi.Repository
             }
         }
 
-        public async Task<IEnumerable<Livro>> BuscarLivros()
+        public async Task<IEnumerable<Livro>> BuscarLivrosAsync()
         {
             try
             {
                 const string sql = @"SELECT
-                                    autor            as Autor,
-                                    editora          as Editora,
-                                    titulo           as Titulo,
-                                    isbn             as Isbn,
-                                    idioma_id        as Idioma,
-                                    gen_literario_id as GeneroLiterario,
-                                    num_paginas      as NumeroPaginas,
-                                    sta_leitura_id   as StatusLeitura
-                                 FROM livros";
+                                        autor            as Autor,
+                                        editora          as Editora,
+                                        titulo           as Titulo,
+                                        isbn             as Isbn,
+                                        idioma_id        as Idioma,
+                                        gen_literario_id as GeneroLiterario,
+                                        num_paginas      as NumeroPaginas,
+                                        sta_leitura_id   as StatusLeitura
+                                     FROM livros";
 
                 using IDbConnection connection = _connection.Connection;
 
@@ -172,10 +172,10 @@ namespace BibliotecaApi.Repository
             {
 
                 throw;
-            }           
+            }
         }
 
-        public async Task<bool> DeletarLivro(string? isbn)
+        public async Task<bool> DeletarLivroAsync(string? isbn)
         {
             try
             {
@@ -195,7 +195,6 @@ namespace BibliotecaApi.Repository
 
                 throw;
             }
-            
         }
     }
 }
