@@ -13,18 +13,21 @@ namespace BibliotecaApi.Controllers
     public class LivroController : ControllerBase
     {
         private readonly ILivroService _livroService;
+        private readonly ILogger<LivroController> _logger;
 
-        public LivroController(ILivroService livroService)
+        public LivroController(ILivroService livroService, ILogger<LivroController> logger)
         {
             _livroService = livroService;
+            _logger = logger;
         }
 
         [HttpPost]
         [Route("AdicionarLivro")]
         [EndpointDescription(MessageConstants.AdicionarLivro)]
-        public async Task<IActionResult> AdicionarLivro([FromBody] Livro livro)
+        public async Task<IActionResult> AdicionarLivroAsync([FromBody] Livro livro)
         {
-            LivroResponse response = await _livroService.AdicionarLivro(livro);
+            _logger.LogInformation(MessageConstants.AdicionarLivroLog, livro.Titulo);
+            LivroResponse response = await _livroService.AdicionarLivroAsync(livro);
 
             return Ok(response);
         }
@@ -32,11 +35,12 @@ namespace BibliotecaApi.Controllers
         [HttpPost]
         [Route("AtualizarLivro")]
         [EndpointDescription(MessageConstants.AtualizarLivro)]
-        public async Task<IActionResult> AtualizarLivro(string isbn, [FromBody] Livro livro)
+        public async Task<IActionResult> AtualizarLivroAsync(string isbn, [FromBody] Livro livro)
         {
             ValidarSeIsbnNulo (isbn);
 
-            LivroResponse response = await _livroService.AtualizarLivro(isbn, livro);
+            _logger.LogInformation(MessageConstants.AtualizarLivroLog, livro.Titulo);
+            LivroResponse response = await _livroService.AtualizarLivroAsync(isbn, livro);
 
             return Ok(response);
         }
@@ -44,9 +48,10 @@ namespace BibliotecaApi.Controllers
         [HttpGet]
         [Route("BuscarLivros")]
         [EndpointDescription(MessageConstants.BuscaTodos)]
-        public async Task<IActionResult> BuscarLivros()
+        public async Task<IActionResult> BuscarLivrosAsync()
         {
-            LivroResponse response = await _livroService.BuscarLivros();
+            _logger.LogInformation(MessageConstants.BuscarTodosLivrosLog);
+            LivroResponse response = await _livroService.BuscarLivrosAsync();
             
             return Ok(response);
         }
@@ -54,11 +59,12 @@ namespace BibliotecaApi.Controllers
         [HttpGet]
         [Route("BuscarLivroPorIsbn")]
         [EndpointDescription(MessageConstants.BuscaLivroPorIsbn)]
-        public async Task<IActionResult> BuscarLivroPorIsbn(string? isbn)
+        public async Task<IActionResult> BuscarLivroPorIsbnAsync(string? isbn)
         {
             ValidarSeIsbnNulo (isbn);
 
-            LivroResponse response = await _livroService.BuscarLivroPorIsbn(isbn);
+            _logger.LogInformation(MessageConstants.BuscarLivroPorIsbnLog, isbn);
+            LivroResponse response = await _livroService.BuscarLivroPorIsbnAsync(isbn);
 
             return Ok(response);
         }        
@@ -66,11 +72,12 @@ namespace BibliotecaApi.Controllers
         [HttpDelete]
         [Route("DeletarLivro")]
         [EndpointDescription(MessageConstants.DeletarLivro)]
-        public async Task<IActionResult> DeletarLivro(string? isbn)
+        public async Task<IActionResult> DeletarLivroAsync(string? isbn)
         {
             ValidarSeIsbnNulo(isbn);
 
-            LivroResponse response = await _livroService.DeletarLivro(isbn);
+            _logger.LogInformation(MessageConstants.DeletarLivroLog, isbn);
+            LivroResponse response = await _livroService.DeletarLivroAsync(isbn);
 
             return Ok(response);
         }       

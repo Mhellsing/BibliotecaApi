@@ -15,7 +15,7 @@ namespace BibliotecaApi.Services
             _livroRepository = livroRepository;
         }
 
-        public async Task<LivroResponse> AdicionarLivro(Livro objeto)
+        public async Task<LivroResponse> AdicionarLivroAsync(Livro objeto)
         {            
             try
             {
@@ -29,7 +29,7 @@ namespace BibliotecaApi.Services
                     return new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
                 }
                 
-                bool foiAdicionado = await _livroRepository.AdicionarLivro(objeto);
+                bool foiAdicionado = await _livroRepository.AdicionarLivroAsync(objeto);
 
                 if (!foiAdicionado)
                 {
@@ -44,11 +44,11 @@ namespace BibliotecaApi.Services
             }            
         }
 
-        public async Task<LivroResponse> AtualizarLivro(string? isbn, Livro objeto)
+        public async Task<LivroResponse> AtualizarLivroAsync(string? isbn, Livro objeto)
         {
             try
             {
-                bool foiAtualizado = await _livroRepository.AtualizarLivro(isbn, objeto);
+                bool foiAtualizado = await _livroRepository.AtualizarLivroAsync(isbn, objeto);
 
                 if (!foiAtualizado)
                 {
@@ -63,11 +63,11 @@ namespace BibliotecaApi.Services
             }
         }
 
-        public async Task<LivroResponse> BuscarLivros()
+        public async Task<LivroResponse> BuscarLivrosAsync()
         {
             try
             {
-                IEnumerable<Livro> livros = await _livroRepository.BuscarLivros();
+                IEnumerable<Livro> livros = await _livroRepository.BuscarLivrosAsync();
 
                 if (!livros.Any()) 
                 {                       
@@ -82,11 +82,11 @@ namespace BibliotecaApi.Services
             }
         }
 
-        public async Task<LivroResponse> BuscarLivroPorIsbn(string? isbn)
+        public async Task<LivroResponse> BuscarLivroPorIsbnAsync(string? isbn)
         {
             try
             {
-                Livro? livro = await _livroRepository.BuscarLivroPorIsbn(isbn);
+                Livro? livro = await _livroRepository.BuscarLivroPorIsbnAsync(isbn);
 
                 if (livro == null)
                 {
@@ -101,11 +101,11 @@ namespace BibliotecaApi.Services
             }
         }
 
-        public async Task<LivroResponse> DeletarLivro(string? isbn)
+        public async Task<LivroResponse> DeletarLivroAsync(string? isbn)
         {
             try
             {
-                bool foiDeletado = await _livroRepository.DeletarLivro(isbn);
+                bool foiDeletado = await _livroRepository.DeletarLivroAsync(isbn);
 
                 if (!foiDeletado)
                 {

@@ -2,7 +2,7 @@
 {
     public static class MessageConstants
     {
-        #region Retorno Reponse
+        #region Reponse Messages
         public const string LivrosEncontrados = "Livro(s) encontrado(s).";
         public const string LivroNaoEncontrado = "Livro não encontrado.";
         public const string LivroAdicionadoComSucesso = "Livro adicionado com sucesso.";
@@ -25,6 +25,14 @@
         public const string AdicionarLivro = "Adiciona um livro ao acervo.";
         public const string AtualizarLivro = "Atualiza um livro do acervo.";
         public const string DeletarLivro = "Deleta um livro do acervo.";
+        #endregion
+
+        #region Log Messages
+        public const string AdicionarLivroLog = "Iniciando processo de adição do livro: {titulo} ao acervo.";
+        public const string AtualizarLivroLog = "Iniciando processo de atualização do livro: {titulo} do acervo.";
+        public const string DeletarLivroLog = "Iniciando processo de deleção do livro: {titulo} do acervo.";
+        public const string BuscarLivroPorIsbnLog = "Iniciando processo de busca do livro pelo isbn: {isbn}.";
+        public const string BuscarTodosLivrosLog = "Iniciando a busca todos os livros do acervo.";
         #endregion
     }
 }
