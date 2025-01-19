@@ -1,4 +1,5 @@
-﻿using BibliotecaApi.Models;
+﻿using BibliotecaApi.Enums;
+using BibliotecaApi.Models;
 using BibliotecaApi.Repository.Connection;
 using BibliotecaApi.Repository.Interfaces;
 using Dapper;
@@ -180,10 +181,12 @@ namespace BibliotecaApi.Repository
             try
             {
                 const string sql = @"DELETE FROM livros 
-                                     WHERE isbn = @isbn";
+                                     WHERE isbn = @isbn
+                                     AND sta_leitura_id = @statusLeitura";
 
                 DynamicParameters parametros = new ();
                 parametros.Add ("isbn", isbn);
+                parametros.Add ("statusLeitura", StatusLeitura.NaoIniciado);
 
                 using IDbConnection connection = _connection.Connection;
                 int linhasAfetadas = await connection.ExecuteAsync (sql, parametros);

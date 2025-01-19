@@ -10,9 +10,12 @@ namespace BibliotecaApi.Services
     public class LivroService : ILivroService
     {
         private readonly ILivroRepository _livroRepository;
-        public LivroService(ILivroRepository livroRepository)
+        private readonly ILogger<LivroService> _logger;
+        
+        public LivroService(ILivroRepository livroRepository, ILogger<LivroService> logger)
         {
             _livroRepository = livroRepository;
+            _logger = logger;
         }
 
         public async Task<LivroResponse> AdicionarLivroAsync(Livro objeto)
@@ -22,11 +25,6 @@ namespace BibliotecaApi.Services
                 if (ValidarSeLivroNulo(objeto))
                 {
                     return new LivroResponse(MessageConstants.LivroNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
-                }               
-
-                if(string.IsNullOrEmpty(objeto.Isbn))
-                {
-                    return new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []);
                 }
                 
                 bool foiAdicionado = await _livroRepository.AdicionarLivroAsync(objeto);
@@ -109,8 +107,8 @@ namespace BibliotecaApi.Services
 
                 if (!foiDeletado)
                 {
-                    return new LivroResponse(MessageConstants.LivroNaoEncontrado, HttpStatusCode.NotFound, []);
-                }
+                    return new LivroResponse(MessageConstants.LivroNaoPodeSerDeletado, HttpStatusCode.NoContent, []);
+                }                
 
                 return new LivroResponse(MessageConstants.LivroRemovidoComSucesso, HttpStatusCode.OK, []);
             }
