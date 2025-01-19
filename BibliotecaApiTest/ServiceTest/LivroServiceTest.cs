@@ -51,7 +51,7 @@ namespace BibliotecaApiTest.ServiceTest
         }
 
         [Fact]
-        public async void RetornaResponseComMensagemLivroJaCadastradoStatusCode400EListaVaziaAoInserirLivroJaCadastrado()        
+        public async void RetornaResponseComMensagemLivroJaCadastradoStatusCode400EListaVaziaAoInserirLivroJaCadastrado()
         {
             //Arrange
             Livro livro = _fixture.Create<Livro>();            
@@ -94,7 +94,7 @@ namespace BibliotecaApiTest.ServiceTest
         }
 
         [Fact]
-        public async void RetornResponseComMensagemErroInternoQuandoExceptionForLancada() 
+        public async void RetornResponseComMensagemErroInternoQuandoExceptionForLancada()
         {
             //Arrange
             Livro livro = _fixture.Create<Livro>();
