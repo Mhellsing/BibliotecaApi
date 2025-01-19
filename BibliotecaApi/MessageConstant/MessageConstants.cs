@@ -19,10 +19,11 @@
         public const string IsbnNaoPodeSerNulo = "O isbn do livro não pode ser nulo.";
         public const string IsbnNaoPodeSerZero = "O isbn do livro não pode ser zero.";
         public const string ErroInterno = "Ocorreu um erro interno. Tente novamente.";
-        #endregion
+        public const string NenhumValorFornecidoParaAtualizacao = "Nenhum valor foi fornecido para atualização.";
+		#endregion
 
-        #region Descrição Endpoints
-        public const string BuscaTodos = "Buscar todos os livros do acervo.";
+		#region Descrição Endpoints
+		public const string BuscaTodos = "Buscar todos os livros do acervo.";
         public const string BuscaLivroPorIsbn = "Busca um livro pelo seu isbn.";
         public const string AdicionarLivro = "Adiciona um livro ao acervo.";
         public const string AtualizarLivro = "Atualiza um livro do acervo.";

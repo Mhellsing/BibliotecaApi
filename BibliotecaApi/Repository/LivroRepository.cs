@@ -7,7 +7,7 @@ using System.Data;
 
 namespace BibliotecaApi.Repository
 {
-    public class LivroRepository : ILivroRepository
+	public class LivroRepository : ILivroRepository
     {
         private readonly PostgreConnection _connection;
 
@@ -72,8 +72,8 @@ namespace BibliotecaApi.Repository
         public async Task<bool> AtualizarLivroAsync(string? isbn, Livro objeto)
         {
             try
-            {
-                string sql = @"UPDATE livros SET ";
+            {                
+				string sql = @"UPDATE livros SET ";
                 DynamicParameters parametros = new ();
 
                 Dictionary<string,object> camposParaAtualizar = new Dictionary<string,object>
@@ -102,18 +102,17 @@ namespace BibliotecaApi.Repository
                                 
                 if (sql.EndsWith ("SET WHERE isbn = @isbn"))
                 {
-                    new InvalidOperationException ("Nenhum valor foi fornecido para atualização.");
+                   return false;
                 }
 
-                // Execução da query
+                
                 using IDbConnection connection = _connection.Connection;
                 int linhasAfetadas = await connection.ExecuteAsync (sql, parametros);
 
                 return linhasAfetadas > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 throw;
             }
         }
