@@ -72,52 +72,45 @@ namespace BibliotecaApi.Repository
         public async Task<bool> AtualizarLivroAsync(string? isbn, Livro objeto)
         {
             try
-            {                
+			{
 				string sql = @"UPDATE livros SET ";
-                DynamicParameters parametros = new ();
+				DynamicParameters parametros = new();
 
-                Dictionary<string,object> camposParaAtualizar = new Dictionary<string,object>
-                {
-                    { "autor", objeto.Autor },
-                    { "editora", objeto.Editora },
-                    { "titulo", objeto.Titulo },
-                    { "isbn", objeto.Isbn },
-                    { "idioma_id", objeto.Idioma },
-                    { "gen_literario_id", objeto.GeneroLiterario },
-                    { "num_paginas", objeto.NumeroPaginas },
-                    { "sta_leitura_id", objeto.StatusLeitura }
-                };
+				Dictionary<string, object> camposParaAtualizar = new Dictionary<string, object>
+				{
+					{ "autor", objeto.Autor },
+					{ "editora", objeto.Editora },
+					{ "titulo", objeto.Titulo },
+					{ "isbn", objeto.Isbn },
+					{ "idioma_id", objeto.Idioma },
+					{ "gen_literario_id", objeto.GeneroLiterario },
+					{ "num_paginas", objeto.NumeroPaginas },
+					{ "sta_leitura_id", objeto.StatusLeitura }
+				};
 
-                foreach(KeyValuePair<string, object> campo in camposParaAtualizar)
-                {
-                    if(campo.Value != null && !(campo.Value is string valor && string.IsNullOrEmpty(valor)))
-                    {
-                        sql += $"{campo.Key} = @{campo.Key}, ";
-                        parametros.Add(campo.Key,campo.Value);
-                    }
-                }
-                
-                sql = sql.TrimEnd (',', ' ') + " WHERE isbn = @isbn";
-                parametros.Add ("isbn", isbn);
-                                
-                if (sql.EndsWith ("SET WHERE isbn = @isbn"))
-                {
-                   return false;
-                }
+				sql = AdicionarCamposParaAtualizar(sql, parametros, camposParaAtualizar);
+				sql = sql.TrimEnd(',', ' ') + " WHERE isbn = @isbn";
+				
+                parametros.Add("isbn", isbn);
 
-                
-                using IDbConnection connection = _connection.Connection;
-                int linhasAfetadas = await connection.ExecuteAsync (sql, parametros);
+				if (sql.EndsWith("SET WHERE isbn = @isbn"))
+				{
+					return false;
+				}
 
-                return linhasAfetadas > 0;
-            }
-            catch (Exception ex)
+
+				using IDbConnection connection = _connection.Connection;
+				int linhasAfetadas = await connection.ExecuteAsync(sql, parametros);
+
+				return linhasAfetadas > 0;
+			}
+			catch (Exception ex)
             {
                 throw;
             }
         }
 
-        public async Task<Livro> BuscarLivroPorIsbnAsync(string isbn)
+		public async Task<Livro> BuscarLivroPorIsbnAsync(string isbn)
         {
             try
             {
@@ -198,5 +191,19 @@ namespace BibliotecaApi.Repository
                 throw;
             }
         }
-    }
+
+		private static string AdicionarCamposParaAtualizar(string sql, DynamicParameters parametros, Dictionary<string, object> camposParaAtualizar)
+		{
+			foreach (KeyValuePair<string, object> campo in camposParaAtualizar)
+			{
+				if (campo.Value != null && !(campo.Value is string valor && string.IsNullOrEmpty(valor)))
+				{
+					sql += $"{campo.Key} = @{campo.Key}, ";
+					parametros.Add(campo.Key, campo.Value);
+				}
+			}
+
+			return sql;
+		}
+	}
 }
