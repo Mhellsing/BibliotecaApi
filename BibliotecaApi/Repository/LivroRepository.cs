@@ -21,30 +21,11 @@ namespace BibliotecaApi.Repository
             try
             {
                 const string sql = @"INSERT INTO Livros 
-                                       (autor, 
-                                        num_paginas, 
-                                        editora, 
-                                        titulo, 
-                                        isbn, 
-                                        idioma_id, 
-                                        gen_literario_id, 
-                                        sta_leitura_id, 
-                                        url_capa, 
-                                        dat_cadastro
-                                       )
+                                       (autor, num_paginas, editora, titulo, isbn, idioma_id, gen_literario_id, sta_leitura_id, url_capa, dat_cadastro)
                                      VALUES 
-                                        (@Autor, 
-                                         @NumeroPaginas, 
-                                         @Editora, 
-                                         @Titulo, 
-                                         @Isbn, 
-                                         @Idioma, 
-                                         @GeneroLiterario, 
-                                         @StatusLeitura, 
-                                         @UrlCapa, 
-                                         current_timestamp
-                                        )
-                                     ON CONFLICT (isbn) DO NOTHING";
+                                       (@Autor, @NumeroPaginas, @Editora, @Titulo, @Isbn, @Idioma, @GeneroLiterario, @StatusLeitura, @UrlCapa, current_timestamp)
+                                     ON CONFLICT 
+                                       (isbn) DO NOTHING";
 
                 DynamicParameters parametros = new();
                 parametros.Add("Autor", objeto.Autor);
