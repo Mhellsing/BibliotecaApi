@@ -15,7 +15,7 @@ using System.Net;
 
 namespace BibliotecaApiTest.ServiceTest
 {
-	public class LivroServiceTest
+    public class LivroServiceTest
     {
         private readonly ILivroRepository _repository = Substitute.For<ILivroRepository>();
         private readonly ILogger<LivroService> _logger = Substitute.For<ILogger<LivroService>>();
@@ -251,7 +251,7 @@ namespace BibliotecaApiTest.ServiceTest
         }
 
         [Fact]
-        public async void RetornaResponseComMensagemLivrosEncontradosStatusCode200EListaComLivro()
+        public async void RetornaResponseComMensagemLivrosEncontradosStatusCode200EListaComLivroAoBuscarLivroPorIsbn()
         {
             //Arrange
             Livro livro = _fixture.Create<Livro>();
@@ -274,28 +274,116 @@ namespace BibliotecaApiTest.ServiceTest
                   });
         }
 
-		[Fact]
-		public async void RetornaResponseComMensagemLivroNaoEncontradosStatusCode404EListaVazia()
+        [Fact]
+        public async void RetornaResponseComMensagemLivroNaoEncontradosStatusCode404EListaVaziaAoBuscarLivroPorIsbn()
+        {
+            //Arrange
+            Livro livro = new Livro();
+            List<Livro> livros = new List<Livro>() { };
+
+            _repository.BuscarLivroPorIsbnAsync(livro.Isbn).ReturnsNullForAnyArgs();
+
+            //Act
+            LivroResponse result = await _service.BuscarLivroPorIsbnAsync(livro.Isbn);
+
+            //Assert
+            result.Should()
+                  .NotBeNull()
+                  .And
+                  .Satisfy<LivroResponse>(x =>
+                  {
+                      x.Mensagem.Should().Be(MessageConstants.LivroNaoEncontrado);
+                      x.StatusCode.Should().Be(HttpStatusCode.NotFound);
+                      x.Livros.Should().BeEquivalentTo(livros);
+                  });
+        }
+
+        [Fact]
+        public async void RetornaResponseComMensagemErroInternoQuandoExceptionForLancadaAoBuscarLivroPorIsbn()
+        {
+            //Arrange
+            Livro livro = _fixture.Create<Livro>();
+            List<Livro> livros = [livro];
+            _repository.BuscarLivroPorIsbnAsync(livro.Isbn).ThrowsAsyncForAnyArgs(new Exception());
+
+            //Act
+            LivroResponse result = await _service.BuscarLivroPorIsbnAsync(livro.Isbn);
+
+            //Assert
+            result.Should()
+                  .NotBeNull()
+                  .And
+                  .Satisfy<LivroResponse>(x =>
+                  {
+                      x.Mensagem.Should().Be(MessageConstants.ErroInterno);
+                      x.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+                      x.Livros.Should().BeEmpty();
+                  });
+        }
+
+        [Fact]
+        public async void RetornaResponseComMensagemLivroRemovidoComSucessoStatusCode200EListaComLivroRemovidoAoRemoverLivro()
 		{
 			//Arrange
-            Livro livro = new Livro();
-			List<Livro> livros = new List<Livro>() {};
+			Livro livro = _fixture.Create<Livro>();
+			List<Livro> livros = [];
+			_repository.DeletarLivroAsync(livro.Isbn).ReturnsForAnyArgs(true);
+			
+            //Act
+			LivroResponse result = await _service.DeletarLivroAsync(livro.Isbn);
+			
+            //Assert
+			result.Should()
+				  .NotBeNull()
+				  .And
+				  .Satisfy<LivroResponse>(x =>
+				  {
+					  x.Mensagem.Should().Be(MessageConstants.LivroRemovidoComSucesso);
+					  x.StatusCode.Should().Be(HttpStatusCode.OK);
+					  x.Livros.Should().BeEquivalentTo(livros);
+				  });
+		}
 
-			_repository.BuscarLivroPorIsbnAsync(livro.Isbn).ReturnsNullForAnyArgs();
-
+        [Fact]
+        public async void RetornaResponseComMensagemLivroNaoPodeSerDeletadoStatusCode204EListaVaziaAoRemoverLivroNaoCadastrado()
+		{
+			//Arrange
+			Livro livro = _fixture.Create<Livro>();
+			List<Livro> livros = [];
+			_repository.DeletarLivroAsync(livro.Isbn).ReturnsForAnyArgs(false);
 			//Act
-			LivroResponse result = await _service.BuscarLivroPorIsbnAsync(livro.Isbn);
-
+			LivroResponse result = await _service.DeletarLivroAsync(livro.Isbn);
 			//Assert
 			result.Should()
 				  .NotBeNull()
 				  .And
 				  .Satisfy<LivroResponse>(x =>
 				  {
-					  x.Mensagem.Should().Be(MessageConstants.LivroNaoEncontrado);
-					  x.StatusCode.Should().Be(HttpStatusCode.NotFound);
+					  x.Mensagem.Should().Be(MessageConstants.LivroNaoPodeSerDeletado);
+					  x.StatusCode.Should().Be(HttpStatusCode.NoContent);
 					  x.Livros.Should().BeEquivalentTo(livros);
 				  });
 		}
+
+        [Fact]
+        public async void RetornaResponseComMensagemErroInternoQuandoExceptionForLancadaAoRemoverLivro()
+        {
+            //Arrange
+            Livro livro = _fixture.Create<Livro>();
+            List<Livro> livros = [];
+            _repository.DeletarLivroAsync(livro.Isbn).ThrowsAsyncForAnyArgs(new Exception());
+            //Act
+            LivroResponse result = await _service.DeletarLivroAsync(livro.Isbn);
+            //Assert
+            result.Should()
+                  .NotBeNull()
+                  .And
+                  .Satisfy<LivroResponse>(x =>
+                  {
+                      x.Mensagem.Should().Be(MessageConstants.ErroInterno);
+                      x.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+                      x.Livros.Should().BeEquivalentTo(livros);
+                  });
+        }
 	}
 }
