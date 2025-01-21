@@ -9,5 +9,6 @@
         Horror = 5,
         Romance = 6,
         Suspense = 7,
+        Ficcao = 8
     }
 }
