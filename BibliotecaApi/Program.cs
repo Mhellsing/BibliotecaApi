@@ -3,12 +3,12 @@ using BibliotecaApi.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
+builder.Services.AddCorsPolicies(); // Adiciona as políticas de CORS
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
@@ -20,6 +20,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CorsExtensions.GetDefaultCorsPolicy()); // Aplica a política de CORS
 
 app.UseAuthorization();
 
