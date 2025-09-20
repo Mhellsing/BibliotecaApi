@@ -1,4 +1,5 @@
-﻿using BibliotecaApi.Models;
+﻿using BibliotecaApi.Helpers;
+using BibliotecaApi.Models;
 using BibliotecaApi.Repository.Connection;
 using BibliotecaApi.Repository.Interfaces;
 using Dapper;
@@ -15,7 +16,7 @@ namespace BibliotecaApi.Repository
             _connection = connection;
         }
 
-        public async Task<bool> AdicionarLivroAsync(Livro objeto)
+        public async Task<bool> AdicionarLivroAsync(Livro livro)
         {
             try
             {
@@ -46,15 +47,15 @@ namespace BibliotecaApi.Repository
                                      ON CONFLICT (isbn) DO NOTHING";
 
                 DynamicParameters parametros = new();
-                parametros.Add("Autor", objeto.Autor);
-                parametros.Add("NumeroPaginas", objeto.NumeroPaginas);
-                parametros.Add("Editora", objeto.Editora);
-                parametros.Add("Titulo", objeto.Titulo);
-                parametros.Add("Isbn", objeto.Isbn);
-                parametros.Add("Idioma", objeto.Idioma);
-                parametros.Add("GeneroLiterario", objeto.GeneroLiterario);
-                parametros.Add("StatusLeitura", objeto.StatusLeitura);
-                parametros.Add("UrlCapa", objeto.UrlCapa);
+                parametros.Add("Autor", livro.Autor);
+                parametros.Add("NumeroPaginas", livro.NumeroPaginas);
+                parametros.Add("Editora", livro.Editora);
+                parametros.Add("Titulo", livro.Titulo);
+                parametros.Add("Isbn", livro.Isbn);
+                parametros.Add("Idioma", livro.Idioma);
+                parametros.Add("GeneroLiterario", livro.GeneroLiterario);
+                parametros.Add("StatusLeitura", livro.StatusLeitura);
+                parametros.Add("UrlCapa", livro.UrlCapa);
 
                 using IDbConnection connection = _connection.Connection;                
                 int linhasAfetadas = await connection.ExecuteAsync (sql, parametros);
@@ -68,60 +69,41 @@ namespace BibliotecaApi.Repository
             }
         }
 
-        public async Task<bool> AtualizarLivroAsync(string? isbn, Livro objeto)
+        public async Task<bool> AtualizarLivroAsync(string? isbn, Livro livro)
         {
-            try
-            {
-                string sql = @"UPDATE livros SET ";
-                DynamicParameters parametros = new ();
-
-                Dictionary<string,object> camposParaAtualizar = new Dictionary<string,object>
+			try
+			{
+				Dictionary<string, object?> camposParaAtualizar = new Dictionary<string, object?>
                 {
-                    { "autor", objeto.Autor },
-                    { "editora", objeto.Editora },
-                    { "titulo", objeto.Titulo },
-                    { "isbn", objeto.Isbn },
-                    { "idioma_id", objeto.Idioma },
-                    { "gen_literario_id", objeto.GeneroLiterario },
-                    { "num_paginas", objeto.NumeroPaginas },
-                    { "sta_leitura_id", objeto.StatusLeitura }
-                };
+			        { "autor", livro.Autor },
+			        { "editora", livro.Editora },
+			        { "titulo", livro.Titulo },
+			        { "isbn", livro.Isbn },
+			        { "idioma_id", livro.Idioma },
+			        { "gen_literario_id", livro.GeneroLiterario },
+			        { "num_paginas", livro.NumeroPaginas },
+			        { "sta_leitura_id", livro.StatusLeitura }
+		        };
 
-                foreach(KeyValuePair<string, object> campo in camposParaAtualizar)
-                {
-                    if(campo.Value != null && !(campo.Value is string valor && string.IsNullOrEmpty(valor)))
-                    {
-                        sql += $"{campo.Key} = @{campo.Key}, ";
-                        parametros.Add(campo.Key,campo.Value);
-                    }
-                }
-                
-                sql = sql.TrimEnd (',', ' ') + " WHERE isbn = @isbn";
-                parametros.Add ("isbn", isbn);
-                                
-                if (sql.EndsWith ("SET WHERE isbn = @isbn"))
-                {
-                    new InvalidOperationException ("Nenhum valor foi fornecido para atualização.");
-                }
+				(string sql, DynamicParameters parametros) = SqlUpdateHelper.MontarUpdate<Livro>("livros", "isbn", isbn, camposParaAtualizar);
 
-                // Execução da query
-                using IDbConnection connection = _connection.Connection;
-                int linhasAfetadas = await connection.ExecuteAsync (sql, parametros);
+				using IDbConnection connection = _connection.Connection;
+				int linhasAfetadas = await connection.ExecuteAsync(sql, parametros);
 
-                return linhasAfetadas > 0;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
+				return linhasAfetadas > 0;
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
 
         public async Task<Livro> BuscarLivroPorIsbnAsync(string isbn)
         {
             try
             {
                 const string sql = @"SELECT                                    
+                                       id               as Id,
                                        autor            as Autor,
                                        editora          as Editora,
                                        titulo           as Titulo,
@@ -129,7 +111,8 @@ namespace BibliotecaApi.Repository
                                        idioma_id        as Idioma,
                                        gen_literario_id as GeneroLiterario,
                                        num_paginas      as NumeroPaginas, 
-                                       sta_leitura_id   as StatusLeitura
+                                       sta_leitura_id   as StatusLeitura,
+                                       urlCapa          as UrlCapa
                                      FROM livros
                                      WHERE isbn = @isbn";
 
@@ -138,11 +121,10 @@ namespace BibliotecaApi.Repository
 
                 using IDbConnection connection = _connection.Connection;
 
-                return await connection.QueryFirstOrDefaultAsync<Livro> (sql, parametros);
+				return await connection.QueryFirstOrDefaultAsync<Livro>(sql, parametros);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -152,25 +134,25 @@ namespace BibliotecaApi.Repository
             try
             {
                 const string sql = @"SELECT
-                                        autor            as Autor,
-                                        editora          as Editora,
-                                        titulo           as Titulo,
-                                        isbn             as Isbn,
-                                        idioma_id        as Idioma,
-                                        gen_literario_id as GeneroLiterario,
-                                        num_paginas      as NumeroPaginas,
-                                        sta_leitura_id   as StatusLeitura
+                                       id               as Id,
+                                       autor            as Autor,
+                                       editora          as Editora,
+                                       titulo           as Titulo,
+                                       isbn             as Isbn,
+                                       idioma_id        as Idioma,
+                                       gen_literario_id as GeneroLiterario,
+                                       num_paginas      as NumeroPaginas,
+                                       sta_leitura_id   as StatusLeitura,
+                                       dat_cadastro     as DataCadastro,
+                                       url_Capa         as UrlCapa
                                      FROM livros";
 
                 using IDbConnection connection = _connection.Connection;
 
-                var teste = await connection.QueryAsync<Livro> (sql);
-
-                return teste;
+				return await connection.QueryAsync<Livro> (sql);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -192,7 +174,6 @@ namespace BibliotecaApi.Repository
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

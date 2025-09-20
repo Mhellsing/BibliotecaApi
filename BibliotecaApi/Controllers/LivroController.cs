@@ -22,7 +22,7 @@ namespace BibliotecaApi.Controllers
         }
 
         [HttpPost]
-        [Route("AdicionarLivro")]
+        [Route("adicionar")]
         [EndpointDescription(MessageConstants.AdicionarLivro)]
         public async Task<IActionResult> AdicionarLivroAsync([FromBody] Livro livro)
         {
@@ -33,7 +33,7 @@ namespace BibliotecaApi.Controllers
         }
 
         [HttpPost]
-        [Route("AtualizarLivro")]
+        [Route("atualizar")]
         [EndpointDescription(MessageConstants.AtualizarLivro)]
         public async Task<IActionResult> AtualizarLivroAsync(string isbn, [FromBody] Livro livro)
         {
@@ -46,7 +46,7 @@ namespace BibliotecaApi.Controllers
         }
 
         [HttpGet]
-        [Route("BuscarLivros")]
+        [Route("buscar")]
         [EndpointDescription(MessageConstants.BuscaTodos)]
         public async Task<IActionResult> BuscarLivrosAsync()
         {
@@ -57,7 +57,7 @@ namespace BibliotecaApi.Controllers
         }
 
         [HttpGet]
-        [Route("BuscarLivroPorIsbn")]
+        [Route("buscarisbn")]
         [EndpointDescription(MessageConstants.BuscaLivroPorIsbn)]
         public async Task<IActionResult> BuscarLivroPorIsbnAsync(string? isbn)
         {
@@ -70,7 +70,7 @@ namespace BibliotecaApi.Controllers
         }        
 
         [HttpDelete]
-        [Route("DeletarLivro")]
+        [Route("deletar")]
         [EndpointDescription(MessageConstants.DeletarLivro)]
         public async Task<IActionResult> DeletarLivroAsync(string? isbn)
         {

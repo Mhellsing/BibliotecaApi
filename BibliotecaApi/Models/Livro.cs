@@ -13,6 +13,6 @@ namespace BibliotecaApi.Models
         public string? Isbn { get; set; }
         public Idioma? Idioma { get; set; }
         public GeneroLiterario? GeneroLiterario { get; set; }
-        public StatusLeitura? StatusLeitura { get; set; }        
+        public StatusLeitura? StatusLeitura { get; set; }
     }
 }
