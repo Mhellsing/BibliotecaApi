@@ -1,4 +1,4 @@
-﻿using BibliotecaApi.Helpers;
+using BibliotecaApi.Helpers;
 using BibliotecaApi.Models;
 using BibliotecaApi.Repository.Connection;
 using BibliotecaApi.Repository.Interfaces;

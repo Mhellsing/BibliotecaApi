@@ -5,6 +5,7 @@
         #region Reponse Messages
         public const string LivrosEncontrados = "Livro(s) encontrado(s).";
         public const string LivroNaoEncontrado = "Livro não encontrado.";
+        public const string LivroNaoPodeSerDeletado = "Livro não pode ser deletado, verifique se o status de leitura é igual a 'Não Lido' ou se o ISBN está correto.";
         public const string LivroAdicionadoComSucesso = "Livro adicionado com sucesso.";
         public const string LivroAtualizadoComSucesso = "Livro atualizado com sucesso.";
         public const string LivroRemovidoComSucesso = "Livro removido com sucesso.";
@@ -16,11 +17,13 @@
         public const string LivroNaoEncontradoParaRemocao = "Livro não encontrado para remoção.";
         public const string LivroNaoEncontradoParaAtualizacao = "Livro não encontrado para atualização.";
         public const string IsbnNaoPodeSerNulo = "O isbn do livro não pode ser nulo.";
+        public const string IsbnNaoPodeSerZero = "O isbn do livro não pode ser zero.";
         public const string ErroInterno = "Ocorreu um erro interno. Tente novamente.";
-        #endregion
+        public const string NenhumValorFornecidoParaAtualizacao = "Nenhum valor foi fornecido para atualização.";
+		#endregion
 
-        #region Descrição Endpoints
-        public const string BuscaTodos = "Buscar todos os livros do acervo.";
+		#region Descrição Endpoints
+		public const string BuscaTodos = "Buscar todos os livros do acervo.";
         public const string BuscaLivroPorIsbn = "Busca um livro pelo seu isbn.";
         public const string AdicionarLivro = "Adiciona um livro ao acervo.";
         public const string AtualizarLivro = "Atualiza um livro do acervo.";

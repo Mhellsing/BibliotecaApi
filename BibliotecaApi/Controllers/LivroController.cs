@@ -26,6 +26,8 @@ namespace BibliotecaApi.Controllers
         [EndpointDescription(MessageConstants.AdicionarLivro)]
         public async Task<IActionResult> AdicionarLivroAsync([FromBody] Livro livro)
         {
+            ValidarSeIsbnNulo(livro.Isbn);
+
             _logger.LogInformation(MessageConstants.AdicionarLivroLog, livro.Titulo);
             LivroResponse response = await _livroService.AdicionarLivroAsync(livro);
 
@@ -87,6 +89,13 @@ namespace BibliotecaApi.Controllers
             if (string.IsNullOrEmpty(isbn))
             {                
                 return BadRequest(new LivroResponse(MessageConstants.IsbnNaoPodeSerNulo, HttpStatusCode.BadRequest, []));
+            }
+
+            int somaCaracteres = isbn.Where(char.IsDigit).Sum(x => x - '0');
+            
+            if(somaCaracteres == 0)
+            {
+                return BadRequest(new LivroResponse(MessageConstants.IsbnNaoPodeSerZero, HttpStatusCode.BadRequest, []));
             }
 
             return null;
